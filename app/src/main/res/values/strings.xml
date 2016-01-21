@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Stravadora</string>
+    <string name="map_data_loading">Loading Strava data…</string>
+    <string name="title_activity_drawer">Stravadora</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+</resources>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#fff">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="15dp">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/typeImage"
+                android:src="@drawable/ic_directions_run_black_48dp"
+                android:layout_gravity="center_vertical" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/activityTitle"
+                android:textColor="@color/colorAccent"
+                android:textSize="18sp"
+                android:textIsSelectable="false"
+                android:layout_marginBottom="3dp" />
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                android:id="@+id/activityDate"
+                    android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                android:text="01/12/15"
+                android:layout_marginBottom="3dp" />
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                android:id="@+id/activityDistance"
+                    android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                android:layout_marginBottom="3dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
