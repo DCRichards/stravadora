@@ -3,13 +3,9 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_map"
-            android:icon="@drawable/ic_room_black_48dp"
-            android:title="Map" />
-        <item
-            android:id="@+id/nav_activities"
-            android:icon="@drawable/ic_directions_run_black_48dp"
-            android:title="Activities" />
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_setting_dark"
+            android:title="Settings" />
     </group>
 
 </menu>

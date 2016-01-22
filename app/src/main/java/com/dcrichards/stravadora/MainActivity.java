@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             type.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_bike_black_48dp));
         }
-        String distanceString = Utils.convertMetersToKm((long)currentActivity.getDistance())+ " in " + Utils.convertSecondsToHMmSs((long)currentActivity.getTime());
+        String distanceString = Utils.convertMetersToKm((long)currentActivity.getDistance())+ " km in " + Utils.convertSecondsToHMmSs((long)currentActivity.getTime());
         ((TextView) customSnackbarLayout.findViewById(R.id.activityDistance)).setText(distanceString);
         snackbarLayout.addView(customSnackbarLayout);
         snackbar.show();
@@ -180,10 +180,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_map) {
+        if (id == R.id.nav_settings) {
             // Handle the camera action
-        } else if (id == R.id.nav_activities) {
-
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
