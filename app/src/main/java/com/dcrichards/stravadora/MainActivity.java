@@ -29,13 +29,17 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.views.MapView;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "SD.MainActivity";
+
     private StravaClient strava;
     private StravadoraMap map;
     private ProgressDialog loadingDialog;
@@ -57,8 +61,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         map.create(this.getApplicationContext(), savedInstanceState);
         strava = new StravaClient(this.getApplicationContext());
         setupClickListeners();
-        getProfileInfo();
-        updateMap();
     }
 
     private void setupClickListeners() {
@@ -86,24 +88,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private void updateMap() {
+    private void fetchActivityData() {
         showLoading();
-        strava.getActivities(new StravaCallback<ArrayList<StravaActivity>>() {
+        int maxAge = SettingsManager.getMaxDataAge(getApplicationContext());
+        final boolean showRun = SettingsManager.getShowRun(getApplicationContext());
+        final boolean showCycle = SettingsManager.getShowCycle(getApplicationContext());
+        long timestamp = new DateTime(new Date()).minusMonths(maxAge).getMillis()/1000;
+        strava.getActivities(timestamp, new StravaCallback<ArrayList<StravaActivity>>() {
             @Override
             public void onResult(ArrayList<StravaActivity> result) {
-                for (StravaActivity act : result) {
-                    // update cache - we add a mapping for easy getting on marker click
-                    cachedActivities.put(act.getId(), act);
-                    map.addRoute(act);
+                cachedActivities.clear();
+                currentActivity = null;
+                if (activitySnackbar != null) {
+                    activitySnackbar.dismiss();
                 }
+                // If we're not showing runs or cycle then don't bother iterating
+                // otherwise, filter appropriately
+                if (showRun || showCycle) {
+                    for (StravaActivity act : result) {
+                        if (act.getType().equals("Run") && showRun) {
+                            cachedActivities.put(act.getId(), act);
+                        } else if (act.getType().equals("Ride") & showCycle) {
+                            cachedActivities.put(act.getId(), act);
+                        }
+                    }
+                }
+                refreshMap();
                 loadingDialog.cancel();
             }
 
             @Override
             public void onError(Exception ex) {
                 Log.e(TAG, "error updating map", ex);
+                loadingDialog.cancel();
             }
         });
+    }
+
+    private void refreshMap() {
+        map.clearMap();
+        map.addRoutes(cachedActivities.values());
+        if (currentActivity != null) {
+            map.highlightRoute(currentActivity);
+        }
     }
 
     private void getProfileInfo() {
@@ -209,18 +236,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialogLayout.findViewById(R.id.okButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSaveFilter(cycleCheck.isChecked(), runCheck.isChecked(), ageSeeker.getProgress() + 1);
+                onSaveFilter(runCheck.isChecked(), cycleCheck.isChecked(), ageSeeker.getProgress() + 1);
             }
         });
         filterDialog.setContentView(dialogLayout);
         filterDialog.show();
-    }
-
-    private void refreshMap() {
-        map.addRoutes(cachedActivities.values());
-        if (currentActivity != null) {
-            map.highlightRoute(currentActivity);
-        }
     }
 
     private void onSaveFilter(boolean showRun, boolean showCycle, int maxAge) {
@@ -228,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         SettingsManager.setShowCycle(getApplicationContext(), showCycle);
         SettingsManager.setMaxDataAge(getApplicationContext(), maxAge);
         filterDialog.cancel();
+        fetchActivityData();
     }
 
     private void checkLocationServicesEnabled() {
@@ -251,17 +272,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setCancelable(false)
                     .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            getProfileInfo();
+                            fetchActivityData();
                             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                             startActivity(intent);
                         }
                     })
                     .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            getProfileInfo();
+                            fetchActivityData();
                             dialog.dismiss();
                         }
                     })
                     .create();
             locationPrompt.show();
+        } else {
+            getProfileInfo();
+            fetchActivityData();
         }
     }
 

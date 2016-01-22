@@ -102,7 +102,7 @@ public class StravaAPI {
         getActivities(-1, callback);
     }
 
-    public void getActivities(final int since, final StravaCallback<JSONArray> callback) {
+    public void getActivities(final long since, final StravaCallback<JSONArray> callback) {
         String query = (since > 0) ? "/athlete/activities?after="+since : "/athlete/activities";
         CustomJSONArrayRequest request = new CustomJSONArrayRequest(endpoint + query, new Response.Listener<JSONArray>() {
             @Override

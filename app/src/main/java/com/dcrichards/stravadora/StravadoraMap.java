@@ -1,6 +1,5 @@
 package com.dcrichards.stravadora;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -70,8 +69,8 @@ public class StravadoraMap {
         }
     }
 
-    public void updateMapLocation(LatLng latlon) {
-        map.setLatLng(latlon, true);
+    public void clearMap() {
+        map.removeAllAnnotations();
     }
 
     public Marker addMarker(LatLng position, int id) {

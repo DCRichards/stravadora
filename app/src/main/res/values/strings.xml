@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">Stravadora</string>
-    <string name="map_data_loading">Loading Strava data…</string>
+    <string name="map_data_loading">Loading data…</string>
     <string name="title_activity_drawer">Stravadora</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="filter_dialog_title">Filter</string>
     <string name="location_required">Location services</string>
-    <string name="location_required_message">Enable location services?</string>
+    <string name="location_required_message">Statrava would like to access your current location. Enable?</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
 </resources>

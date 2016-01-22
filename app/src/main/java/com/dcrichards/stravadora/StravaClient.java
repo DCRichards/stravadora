@@ -30,7 +30,7 @@ public class StravaClient {
         return points;
     }
 
-    private void buildActivity(final JSONArray activityJSON, final StravaCallback<ArrayList<StravaActivity>> callback) {
+    private void constructActivities(final JSONArray activityJSON, final StravaCallback<ArrayList<StravaActivity>> callback) {
         final ArrayList<StravaActivity> activitiesList = new ArrayList<>();
         for (int i = 0; i < activityJSON.length(); i++) {
             try {
@@ -64,14 +64,13 @@ public class StravaClient {
                 callback.onError(je);
             }
         }
-
     }
 
-    public void getActivities(final StravaCallback<ArrayList<StravaActivity>> callback) {
-        api.getActivities(new StravaCallback<JSONArray>() {
+    public void getActivities(long since, final StravaCallback<ArrayList<StravaActivity>> callback) {
+        api.getActivities(since, new StravaCallback<JSONArray>() {
             @Override
             public void onResult(final JSONArray activityResult) {
-                buildActivity(activityResult, callback);
+                constructActivities(activityResult, callback);
             }
 
             @Override
