@@ -1,9 +1,14 @@
 package com.dcrichards.stravadora;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -19,13 +24,16 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.views.MapView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "SD.MainActivity";
     private StravaClient strava;
@@ -44,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        checkLocationServicesEnabled();
         map = new StravadoraMap((MapView) findViewById(R.id.mapview));
         map.create(this.getApplicationContext(), savedInstanceState);
         strava = new StravaClient(this.getApplicationContext());
@@ -174,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         runCheck.setChecked(SettingsManager.getShowRun(getApplicationContext()));
         int maxAge = SettingsManager.getMaxDataAge(getApplicationContext());
         // seek bar min is always 0 so offset value by 1 when setting retrieving
-        ageSeeker.setProgress(maxAge-1);
+        ageSeeker.setProgress(maxAge - 1);
         ageLabel.setText(maxAge + (maxAge > 1 ? " Months" : " Month"));
         // Add listeners
         ageSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -200,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialogLayout.findViewById(R.id.okButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSaveFilter(cycleCheck.isChecked(), runCheck.isChecked(), ageSeeker.getProgress()+1);
+                onSaveFilter(cycleCheck.isChecked(), runCheck.isChecked(), ageSeeker.getProgress() + 1);
             }
         });
         filterDialog.setContentView(dialogLayout);
@@ -219,6 +228,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         SettingsManager.setShowCycle(getApplicationContext(), showCycle);
         SettingsManager.setMaxDataAge(getApplicationContext(), maxAge);
         filterDialog.cancel();
+    }
+
+    private void checkLocationServicesEnabled() {
+        int locationStatus = 0;
+        try {
+            // Prior to Android 4.4 the setting is stored under a different constant
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                locationStatus = Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE);
+            } else {
+                locationStatus = Settings.Secure.getInt(getContentResolver(),  Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            }
+        } catch (Settings.SettingNotFoundException snfe) {
+            Log.e(TAG, "Setting not found ", snfe);
+        }
+        if (locationStatus == Settings.Secure.LOCATION_MODE_OFF) {
+            // prompt user to enable location settings
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            AlertDialog locationPrompt = builder.setTitle(getResources().getString(R.string.location_required))
+                    .setMessage(getResources().getString(R.string.location_required_message))
+                    .setCancelable(false)
+                    .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create();
+            locationPrompt.show();
+        }
     }
 
     @Override
@@ -248,6 +292,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(TAG, "play services connected");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(TAG, "play services connection suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.e(TAG, "Play services connection failed " + connectionResult.getErrorMessage());
     }
 
     @Override

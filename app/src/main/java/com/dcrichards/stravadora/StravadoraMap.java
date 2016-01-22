@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.Polyline;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
+import com.mapbox.mapboxsdk.constants.MyLocationTracking;
 import com.mapbox.mapboxsdk.constants.Style;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
@@ -17,6 +19,8 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class StravadoraMap {
+
+    private static final String TAG = "SD.Map";
 
     private MapView map;
     private HashMap<Integer, Polyline> currentRoutes = new HashMap<>();
@@ -32,7 +36,13 @@ public class StravadoraMap {
         String mapType = SettingsManager.getMapType(context);
         setMapType(mapType);
         map.setLatLng(new LatLng(50.8429, -0.13777));
-        map.setZoom(13);
+        try {
+            map.setMyLocationEnabled(true);
+            map.setMyLocationTrackingMode(MyLocationTracking.TRACKING_FOLLOW);
+        } catch (SecurityException se) {
+            Log.e(TAG, "no manifest permission found for location", se);
+        }
+        map.setZoom(12);
         map.onCreate(savedInstanceState);
     }
 
@@ -58,6 +68,10 @@ public class StravadoraMap {
                 highlightColor = Color.RED;
                 break;
         }
+    }
+
+    public void updateMapLocation(LatLng latlon) {
+        map.setLatLng(latlon, true);
     }
 
     public Marker addMarker(LatLng position, int id) {
