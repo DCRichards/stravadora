@@ -1,5 +1,6 @@
 package com.dcrichards.stravadora;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,12 +13,15 @@ import com.mapbox.mapboxsdk.constants.Style;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public class StravadoraMap {
 
     private MapView map;
     private HashMap<Integer, Polyline> currentRoutes = new HashMap<>();
+    private int routeColor;
+    private int highlightColor;
 
     public StravadoraMap(MapView map) {
         this.map = map;
@@ -25,7 +29,8 @@ public class StravadoraMap {
 
     public void create(Context context, Bundle savedInstanceState) {
         map.setAccessToken(PropertiesManager.get(context, PropertiesManager.ACCESSTOKEN));
-        map.setStyleUrl(Style.MAPBOX_STREETS);
+        String mapType = SettingsManager.getMapType(context);
+        setMapType(mapType);
         map.setLatLng(new LatLng(50.8429, -0.13777));
         map.setZoom(13);
         map.onCreate(savedInstanceState);
@@ -33,6 +38,26 @@ public class StravadoraMap {
 
     public MapView getMapView() {
         return this.map;
+    }
+
+    public void setMapType(String mapType) {
+        switch (mapType) {
+            case "dark":
+                map.setStyleUrl(Style.DARK);
+                routeColor = Color.parseColor("#ff8c1a");
+                highlightColor = Color.WHITE;
+                break;
+            case "satellite":
+                map.setStyleUrl(Style.SATELLITE_STREETS);
+                routeColor = Color.WHITE;
+                highlightColor = Color.BLUE;
+                break;
+            case "streets":
+                map.setStyleUrl(Style.MAPBOX_STREETS);
+                routeColor = Color.GRAY;
+                highlightColor = Color.RED;
+                break;
+        }
     }
 
     public Marker addMarker(LatLng position, int id) {
@@ -50,9 +75,15 @@ public class StravadoraMap {
         map.removeAnnotation(currentRoutes.remove(activity.getId()));
         PolylineOptions route = new PolylineOptions();
         route.width(5);
-        route.color(Color.RED);
+        route.color(highlightColor);
         Polyline line = map.addPolyline(route.addAll(activity.getRoute()));
         currentRoutes.put(activity.getId(), line);
+    }
+
+    public void addRoutes(Collection<StravaActivity> activities) {
+        for (StravaActivity act: activities) {
+            addRoute(act);
+        }
     }
 
     public void addRoute(StravaActivity activity) {
@@ -60,7 +91,7 @@ public class StravadoraMap {
         PolylineOptions route = new PolylineOptions();
         route.width(5);
         route.alpha((float) 0.5);
-        route.color(Color.GRAY);
+        route.color(routeColor);
         addMarker(activity.getRoute().get(0), activity.getId());
         Polyline line = map.addPolyline(route.addAll(activity.getRoute()));
         currentRoutes.put(activity.getId(),line);

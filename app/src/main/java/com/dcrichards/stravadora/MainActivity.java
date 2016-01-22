@@ -2,7 +2,6 @@ package com.dcrichards.stravadora;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -32,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ProgressDialog loadingDialog;
     private Dialog filterDialog;
     private DrawerLayout drawer;
+    private Snackbar activitySnackbar;
     private HashMap<Integer, StravaActivity> cachedActivities = new HashMap<>();
     private StravaActivity currentActivity;
 
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public boolean onMarkerClick(Marker marker) {
                 onMarkerClicked(marker);
-                //event consumed so don't show popup
+                // event consumed so don't show popup
                 return true;
             }
         });
@@ -127,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void onMarkerClicked(Marker marker) {
-        showLoading();
         // reset currently highlighted and set new current activity
         if (currentActivity != null) {
             map.addRoute(currentActivity);
@@ -135,9 +134,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currentActivity = cachedActivities.get(Integer.parseInt(marker.getTitle()));
         // add highlight to map
         map.highlightRoute(currentActivity);
-        // show snackbar
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.snackbarPosition), "", Snackbar.LENGTH_INDEFINITE);
-        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // show activity info to user
+        showActivitySnackbar();
+    }
+
+    private void showActivitySnackbar() {
+        activitySnackbar = Snackbar.make(findViewById(R.id.snackbarPosition), "", Snackbar.LENGTH_INDEFINITE);
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) activitySnackbar.getView();
         snackbarLayout.setBackgroundColor(Color.parseColor("#ffffff"));
         snackbarLayout.findViewById(android.support.design.R.id.snackbar_text).setVisibility(View.INVISIBLE);
         View customSnackbarLayout = getLayoutInflater().inflate(R.layout.snackbar_activity_view, null);
@@ -152,8 +155,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String distanceString = Utils.convertMetersToKm((long)currentActivity.getDistance())+ " km in " + Utils.convertSecondsToHMmSs((long)currentActivity.getTime());
         ((TextView) customSnackbarLayout.findViewById(R.id.activityDistance)).setText(distanceString);
         snackbarLayout.addView(customSnackbarLayout);
-        snackbar.show();
-        loadingDialog.cancel();
+        activitySnackbar.show();
     }
 
     private void onFilterButtonClicked() {
@@ -162,6 +164,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View dialogLayout = this.getLayoutInflater().inflate(R.layout.filter_dialog_layout,null);
         filterDialog.setContentView(dialogLayout);
         filterDialog.show();
+    }
+
+    private void refreshMap() {
+        map.addRoutes(cachedActivities.values());
+        if (currentActivity != null) {
+            map.highlightRoute(currentActivity);
+        }
     }
 
     @Override
@@ -178,12 +187,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_light) {
-
+            SettingsManager.setMapType(getApplicationContext(), "streets");
+            map.setMapType("streets");
         } else if (id == R.id.nav_dark) {
-
+            SettingsManager.setMapType(getApplicationContext(), "dark");
+            map.setMapType("dark");
         } else if (id == R.id.nav_satellite) {
-
+            SettingsManager.setMapType(getApplicationContext(), "satellite");
+            map.setMapType("satellite");
         }
+        refreshMap();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
