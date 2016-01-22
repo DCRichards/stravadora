@@ -24,7 +24,7 @@ public class SettingsManager {
      * @return The max age of data
      */
     public static int getMaxDataAge(Context context) {
-        return context.getSharedPreferences(PREFERENCE_FILE, 0).getInt(KEY_MAX_AGE, 12);
+        return context.getSharedPreferences(PREFERENCE_FILE, 0).getInt(KEY_MAX_AGE, 6);
     }
 
     /**

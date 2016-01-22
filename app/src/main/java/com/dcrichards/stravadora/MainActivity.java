@@ -14,7 +14,9 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.mapbox.mapboxsdk.annotations.Marker;
@@ -161,7 +163,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void onFilterButtonClicked() {
         filterDialog = new Dialog(MainActivity.this);
         filterDialog.setTitle(getResources().getString(R.string.filter_dialog_title));
-        View dialogLayout = this.getLayoutInflater().inflate(R.layout.filter_dialog_layout,null);
+        // Get compontents
+        View dialogLayout = this.getLayoutInflater().inflate(R.layout.filter_dialog_layout, null);
+        final SeekBar ageSeeker = (SeekBar) dialogLayout.findViewById(R.id.ageBar);
+        final TextView ageLabel = (TextView) dialogLayout.findViewById(R.id.ageValue);
+        final CheckBox cycleCheck = (CheckBox) dialogLayout.findViewById(R.id.cycleCheckbox);
+        final CheckBox runCheck = (CheckBox) dialogLayout.findViewById(R.id.runCheckbox);
+        // Set values
+        cycleCheck.setChecked(SettingsManager.getShowCycle(getApplicationContext()));
+        runCheck.setChecked(SettingsManager.getShowRun(getApplicationContext()));
+        int maxAge = SettingsManager.getMaxDataAge(getApplicationContext());
+        // seek bar min is always 0 so offset value by 1 when setting retrieving
+        ageSeeker.setProgress(maxAge-1);
+        ageLabel.setText(maxAge + (maxAge > 1 ? " Months" : " Month"));
+        // Add listeners
+        ageSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ageLabel.setText(progress + 1 + (progress+1 > 1 ? " Months" : " Month"));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        dialogLayout.findViewById(R.id.cancelButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                filterDialog.cancel();
+            }
+        });
+        dialogLayout.findViewById(R.id.okButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSaveFilter(cycleCheck.isChecked(), runCheck.isChecked(), ageSeeker.getProgress()+1);
+            }
+        });
         filterDialog.setContentView(dialogLayout);
         filterDialog.show();
     }
@@ -171,6 +212,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (currentActivity != null) {
             map.highlightRoute(currentActivity);
         }
+    }
+
+    private void onSaveFilter(boolean showRun, boolean showCycle, int maxAge) {
+        SettingsManager.setShowRun(getApplicationContext(), showRun);
+        SettingsManager.setShowCycle(getApplicationContext(), showCycle);
+        SettingsManager.setMaxDataAge(getApplicationContext(), maxAge);
+        filterDialog.cancel();
     }
 
     @Override
