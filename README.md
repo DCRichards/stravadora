@@ -4,7 +4,7 @@ Stravadora is a location-centric Strava client for Android. Stravadora provides 
 
 ## Setup
 
-In order to build from source, you must provide a `stravadora.properties` file in the `app/src/assets` directory. This should contain the [Strava API endpoint](http://strava.github.io/api/), A [Mapbox Access Token](https://www.mapbox.com/account/apps/) and a [Strava Access Token](https://www.strava.com/settings/api). For example:
+In order to build from source, you must provide a `stravadora.properties` file in the `app/src/main/assets` directory. This should contain the [Strava API endpoint](http://strava.github.io/api/), A [Mapbox Access Token](https://www.mapbox.com/account/apps/) and a [Strava Access Token](https://www.strava.com/settings/api). For example:
 
 	ENDPOINT = https://www.strava.com/api/v3
 	STRAVA_AUTH_TOKEN = xxxxxxxxxxxxxxxx
