@@ -20,10 +20,14 @@ Build using Android Studio or run:
 ## Testing
 
 
-
 ## Libraries
 
-Stravadora makes use of the following libraries.
+Stravadora makes use of the following libraries:
 
 * [Mapbox Android SDK](https://www.mapbox.com/android-sdk/). Note that the latest development snapshot is used here for testing the latest features and may be subject to change.
-* [Android Volley HTTP Library](http://developer.android.com/training/volley/index.html)
+* [Android Volley](http://developer.android.com/training/volley/index.html) for an excellent async HTTP library with extensive data type support.
+* [JODA Time](http://www.joda.org/joda-time/) because... well, Java date/time.
+
+## Todo
+
+* Support Strava OAuth flow for login based access to API.
