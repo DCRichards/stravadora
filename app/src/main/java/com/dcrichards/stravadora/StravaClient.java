@@ -11,6 +11,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * Wrapper for the Strava API providing an abstracted API with Athlete and Activity objects
+ *
+ * @author DCRichards
+ */
 public class StravaClient {
 
     private StravaAPI api;
@@ -66,6 +71,13 @@ public class StravaClient {
         }
     }
 
+
+    /**
+     * Get activites for current athlete, after the given date
+     *
+     * @param since     Display activities after this UNIX timestamp
+     * @param callback  Callback for returning a list of StravaActivity instances
+     */
     public void getActivities(long since, final StravaCallback<ArrayList<StravaActivity>> callback) {
         api.getActivities(since, new StravaCallback<JSONArray>() {
             @Override
@@ -80,6 +92,11 @@ public class StravaClient {
         });
     }
 
+    /**
+     * Get the current athlete
+     *
+     * @param callback Callback for returning the StravaAthlete instance
+     */
     public void getAthlete(final StravaCallback<StravaAthlete> callback) {
         api.getAthlete(new StravaCallback<JSONObject>() {
             @Override

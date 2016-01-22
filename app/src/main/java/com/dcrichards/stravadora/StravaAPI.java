@@ -20,7 +20,6 @@ import java.util.Map;
 
 /**
  * An asynchronous interface for interacting with the Strava API
- *
  * @see <a href="http://strava.github.io/api/">Strava API V3</a>
  *
  * @author DCRichards
@@ -33,14 +32,21 @@ public class StravaAPI {
     private String authToken;
     private RequestQueue requestQueue;
 
+    /**
+     * Create a new StravaAPI instance
+     *
+     * @param context The current application context
+     */
     public StravaAPI(Context context) {
         requestQueue = Volley.newRequestQueue(context);
         endpoint = PropertiesManager.get(context, PropertiesManager.ENDPOINT);
         authToken = PropertiesManager.get(context, PropertiesManager.STRAVAAUTHTOKEN);
     }
 
+    /**
+     * Customised JsonArrayRequest for adding auth headers
+     */
     class CustomJSONArrayRequest extends JsonArrayRequest {
-
         public CustomJSONArrayRequest(String url, Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
             super(url, listener, errorListener);
         }
@@ -53,8 +59,10 @@ public class StravaAPI {
         }
     }
 
+    /**
+     * Customised JsonObjectRequest for adding auth header
+     */
     class CustomJSONObjectRequest extends JsonObjectRequest {
-
         public CustomJSONObjectRequest(String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
             super(url, jsonRequest, listener, errorListener);
         }
@@ -65,9 +73,14 @@ public class StravaAPI {
             headers.put("Authorization", "Bearer " + authToken);
             return headers;
         }
-
     }
 
+    /**
+     * Get a profile image link as a bitmap
+     *
+     * @param imageUrl The location of the profile image
+     * @param callback The callback to return the image Bitmap
+     */
     public void getProfileImage(String imageUrl, final StravaCallback<Bitmap> callback) {
         ImageRequest request = new ImageRequest(imageUrl, new Response.Listener<Bitmap>() {
             @Override
@@ -83,6 +96,11 @@ public class StravaAPI {
         requestQueue.add(request);
     }
 
+    /**
+     * Get the current athlete
+     *
+     * @param callback The callback to return the JSON representation
+     */
     public void getAthlete(final StravaCallback<JSONObject> callback) {
         CustomJSONObjectRequest request = new CustomJSONObjectRequest(endpoint+"/athlete",null, new Response.Listener<JSONObject>() {
             @Override
@@ -98,10 +116,21 @@ public class StravaAPI {
         requestQueue.add(request);
     }
 
+    /**
+     * Get all activities for the current athlete
+     *
+     * @param callback The callback to return the JSON representation
+     */
     public void getActivities(final StravaCallback<JSONArray> callback) {
         getActivities(-1, callback);
     }
 
+    /**
+     * Get activities for athlete, filtered by time
+     *
+     * @param since     The UNIX timestamp of the earliest activities to return
+     * @param callback  The callback to return the JSON representation
+     */
     public void getActivities(final long since, final StravaCallback<JSONArray> callback) {
         String query = (since > 0) ? "/athlete/activities?after="+since : "/athlete/activities";
         CustomJSONArrayRequest request = new CustomJSONArrayRequest(endpoint + query, new Response.Listener<JSONArray>() {
@@ -118,6 +147,12 @@ public class StravaAPI {
         requestQueue.add(request);
     }
 
+    /**
+     * Get stream for a given activity
+     *
+     * @param activityId The ID of the activity to return the stream for
+     * @param callback   The callback to return the JSON representation
+     */
     public void getStreamForActivity(final int activityId, final StravaCallback<JSONArray> callback) {
         CustomJSONArrayRequest request = new CustomJSONArrayRequest(endpoint+"/activities/"+activityId+"/streams/latlng?resolution=low", new Response.Listener<JSONArray>() {
             @Override

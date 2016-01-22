@@ -141,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String name = result.getFirstname() + " " + result.getLastname();
                 ((TextView) findViewById(R.id.athleteName)).setText(name);
             }
-
             @Override
             public void onError(Exception ex) {
                 Log.e(TAG, "error updating map", ex);
@@ -157,15 +156,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void onMenuButtonClicked() {
-        if (drawer.isDrawerOpen(Gravity.LEFT)) {
-            drawer.closeDrawer(Gravity.LEFT);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
         } else {
-            drawer.openDrawer(Gravity.LEFT);
+            drawer.openDrawer(GravityCompat.START);
         }
     }
 
     private void onMarkerClicked(Marker marker) {
-        // reset currently highlighted and set new current activity
+        // Reset currently highlighted and set new current activity
         if (currentActivity != null) {
             map.addRoute(currentActivity);
         }
@@ -177,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void showActivitySnackbar() {
+        // Set up custom layout for Snackbar, by default it only displays a simple TextView
         activitySnackbar = Snackbar.make(findViewById(R.id.snackbarPosition), "", Snackbar.LENGTH_INDEFINITE);
         Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) activitySnackbar.getView();
         snackbarLayout.setBackgroundColor(Color.parseColor("#ffffff"));
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         cycleCheck.setChecked(SettingsManager.getShowCycle(getApplicationContext()));
         runCheck.setChecked(SettingsManager.getShowRun(getApplicationContext()));
         int maxAge = SettingsManager.getMaxDataAge(getApplicationContext());
-        // seek bar min is always 0 so offset value by 1 when setting retrieving
+        // Seek bar min is always 0 so offset value by 1 when setting retrieving
         ageSeeker.setProgress(maxAge - 1);
         ageLabel.setText(maxAge + (maxAge > 1 ? " Months" : " Month"));
         // Add listeners
@@ -266,7 +266,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (locationStatus == Settings.Secure.LOCATION_MODE_OFF) {
             // prompt user to enable location settings
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
             AlertDialog locationPrompt = builder.setTitle(getResources().getString(R.string.location_required))
                     .setMessage(getResources().getString(R.string.location_required_message))
                     .setCancelable(false)

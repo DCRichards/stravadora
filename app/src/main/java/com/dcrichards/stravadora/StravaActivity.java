@@ -3,6 +3,11 @@ package com.dcrichards.stravadora;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import java.util.ArrayList;
 
+/**
+ * Represents an a Strava activity including route data
+ *
+ * @author DCRichards
+ */
 public class StravaActivity {
 
     private int id;
@@ -13,6 +18,17 @@ public class StravaActivity {
     private String startDate;
     private String type;
 
+    /**
+     * Create a new Strava activity
+     *
+     * @param id        The id of the activity
+     * @param name      The name of the activity
+     * @param route     The lat lon points representing the route data
+     * @param distance  The distance in meter
+     * @param time      The time in seconds
+     * @param startDate The start date in UNIX time
+     * @param type      Activity type, 'Run' or 'Ride'
+     */
     public StravaActivity(int id, String name, ArrayList<LatLng> route, double distance, double time, String startDate, String type) {
         this.id = id;
         this.name = name;

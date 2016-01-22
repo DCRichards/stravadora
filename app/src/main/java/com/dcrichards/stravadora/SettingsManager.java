@@ -30,8 +30,8 @@ public class SettingsManager {
     /**
      * Set the max age of data on the map
      *
-     * @param context Current context
-     * @param age The age of data (in months)
+     * @param context   Current context
+     * @param age       The age of data (in months)
      */
     public static void setMaxDataAge(Context context, int age) {
         SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_FILE, 0).edit();
@@ -53,8 +53,8 @@ public class SettingsManager {
     /**
      * Set whether cycle data is displayed on map
      *
-     * @param context Current context
-     * @param show Whether cycle data is shown
+     * @param context   Current context
+     * @param show      Whether cycle data is shown
      */
     public static void setShowCycle(Context context, boolean show) {
         SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_FILE, 0).edit();
@@ -77,8 +77,8 @@ public class SettingsManager {
     /**
      * Set whether run data is displayed on the map
      *
-     * @param context Current context
-     * @param show Whether run data is shown
+     * @param context   Current context
+     * @param show      Whether run data is shown
      */
     public static void setShowRun(Context context, boolean show) {
         SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_FILE, 0).edit();
@@ -99,8 +99,8 @@ public class SettingsManager {
     /**
      * Set the current map type
      *
-     * @param context Current context
-     * @param type Map type string
+     * @param context   Current context
+     * @param type      Map type string
      */
     public static void setMapType(Context context, String type) {
         SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_FILE, 0).edit();
