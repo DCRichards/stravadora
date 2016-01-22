@@ -1,5 +1,6 @@
 package com.dcrichards.stravadora;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private StravaClient strava;
     private StravadoraMap map;
     private ProgressDialog loadingDialog;
+    private Dialog filterDialog;
     private DrawerLayout drawer;
     private HashMap<Integer, StravaActivity> cachedActivities = new HashMap<>();
     private StravaActivity currentActivity;
@@ -39,6 +42,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        map = new StravadoraMap((MapView) findViewById(R.id.mapview));
+        map.create(this.getApplicationContext(), savedInstanceState);
+        strava = new StravaClient(this.getApplicationContext());
+        setupClickListeners();
+        getProfileInfo();
+        updateMap();
+    }
+
+    private void setupClickListeners() {
         FloatingActionButton menuButton = (FloatingActionButton) findViewById(R.id.menuButton);
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,8 +58,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 onMenuButtonClicked();
             }
         });
-        map = new StravadoraMap((MapView) findViewById(R.id.mapview));
-        map.create(this.getApplicationContext(), savedInstanceState);
+        FloatingActionButton filterButton = (FloatingActionButton) findViewById(R.id.filterButton);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFilterButtonClicked();
+            }
+        });
         map.setMarkerClickListener(new MapView.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -56,9 +73,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
             }
         });
-        strava = new StravaClient(this.getApplicationContext());
-        getProfileInfo();
-        updateMap();
     }
 
     private void updateMap() {
@@ -140,6 +154,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         snackbarLayout.addView(customSnackbarLayout);
         snackbar.show();
         loadingDialog.cancel();
+    }
+
+    private void onFilterButtonClicked() {
+        filterDialog = new Dialog(MainActivity.this);
+        filterDialog.setTitle(getResources().getString(R.string.filter_dialog_title));
+        View dialogLayout = this.getLayoutInflater().inflate(R.layout.filter_dialog_layout,null);
+        filterDialog.setContentView(dialogLayout);
+        filterDialog.show();
     }
 
     @Override
