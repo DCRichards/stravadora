@@ -2,6 +2,8 @@
 
 Stravadora is a location-centric Strava client for Android. Stravadora provides a geographic pespective of a user's Strava activities, displaying routes, distance and time data and allows filtering by a number of criteria. The name is derived from the Spanish for explorer - *exploradora*.
 
+![screenshot](https://raw.githubusercontent.com/DCRichards/stravadora/master/screenshot/screenshot.png)
+
 ## Setup
 
 In order to build from source, you must provide a `stravadora.properties` file in the `app/src/main/assets` directory. This should contain the [Strava API endpoint](http://strava.github.io/api/), A [Mapbox Access Token](https://www.mapbox.com/account/apps/) and a [Strava Access Token](https://www.strava.com/settings/api). For example:
