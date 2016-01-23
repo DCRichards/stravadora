@@ -71,7 +71,6 @@ public class StravaClient {
         }
     }
 
-
     /**
      * Get activites for current athlete, after the given date
      *
