@@ -179,7 +179,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         activitySnackbar = Snackbar.make(findViewById(R.id.snackbarPosition), "", Snackbar.LENGTH_INDEFINITE);
         Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) activitySnackbar.getView();
         snackbarLayout.setBackgroundColor(Color.parseColor("#ffffff"));
+        // Hide original snackbar textView
         snackbarLayout.findViewById(android.support.design.R.id.snackbar_text).setVisibility(View.INVISIBLE);
+        // Set up content
         View customSnackbarLayout = getLayoutInflater().inflate(R.layout.snackbar_activity_view, null);
         ((TextView) customSnackbarLayout.findViewById(R.id.activityTitle)).setText(currentActivity.getName());
         ((TextView) customSnackbarLayout.findViewById(R.id.activityDate)).setText(Utils.utcTimeToString(currentActivity.getStartDate()));
@@ -210,12 +212,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int maxAge = SettingsManager.getMaxDataAge(getApplicationContext());
         // Seek bar min is always 0 so offset value by 1 when setting retrieving
         ageSeeker.setProgress(maxAge - 1);
-        ageLabel.setText(maxAge + (maxAge > 1 ? " Months" : " Month"));
+        String ageLabelText = maxAge + (maxAge > 1 ? " Months" : " Month");
+        ageLabel.setText(ageLabelText);
         // Add listeners
         ageSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                ageLabel.setText(progress + 1 + (progress+1 > 1 ? " Months" : " Month"));
+                String labeltext = progress + 1 + (progress+1 > 1 ? " Months" : " Month");
+                ageLabel.setText(labeltext);
             }
 
             @Override
