@@ -21,6 +21,9 @@ Build using Android Studio or run:
 
 ## Testing
 
+Via Android Studio or run:
+
+	gradle connectedAndroidTest
 
 ## Libraries & Resources
 
