@@ -82,18 +82,22 @@ public class StravaAPI {
      * @param callback The callback to return the image Bitmap
      */
     public void getProfileImage(String imageUrl, final StravaCallback<Bitmap> callback) {
-        ImageRequest request = new ImageRequest(imageUrl, new Response.Listener<Bitmap>() {
-            @Override
-            public void onResponse(Bitmap response) {
-                callback.onResult(response);
-            }
-        }, 0, 0, null, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        callback.onError(error);
-                    }
-                });
-        requestQueue.add(request);
+        try {
+            ImageRequest request = new ImageRequest(imageUrl, new Response.Listener<Bitmap>() {
+                @Override
+                public void onResponse(Bitmap response) {
+                    callback.onResult(response);
+                }
+            }, 0, 0, null, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    callback.onError(error);
+                }
+            });
+            requestQueue.add(request);
+        } catch (NullPointerException npe) {
+            callback.onResult(null);
+        }
     }
 
     /**

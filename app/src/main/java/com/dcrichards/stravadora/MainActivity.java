@@ -136,7 +136,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         strava.getAthlete(new StravaCallback<StravaAthlete>() {
             @Override
             public void onResult(StravaAthlete result) {
-                ((ImageView) findViewById(R.id.athleteImage)).setImageBitmap(result.getProfileImage());
+                if (result.getProfileImage() != null) {
+                    ((ImageView) findViewById(R.id.athleteImage)).setImageBitmap(result.getProfileImage());
+                }
                 String name = result.getFirstname() + " " + result.getLastname();
                 ((TextView) findViewById(R.id.athleteName)).setText(name);
             }
