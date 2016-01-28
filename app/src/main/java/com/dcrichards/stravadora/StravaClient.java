@@ -81,7 +81,11 @@ public class StravaClient {
         api.getActivities(since, new StravaCallback<JSONArray>() {
             @Override
             public void onResult(final JSONArray activityResult) {
-                constructActivities(activityResult, callback);
+                if (activityResult.length() != 0) {
+                    constructActivities(activityResult, callback);
+                } else {
+                    callback.onResult(new ArrayList<StravaActivity>());
+                }
             }
 
             @Override
